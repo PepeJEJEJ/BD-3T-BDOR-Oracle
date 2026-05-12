@@ -38,3 +38,11 @@ CREATE OR REPLACE TYPE Alumno UNDER Persona ( -- Under persona indica herencia (
     calificacion NUMBER
 );
 /
+
+CREATE OR REPLACE TYPE Profesor UNDER Persona (
+    asignatura VARCHAR2(50),
+    salario NUMBER,
+    MEMBER PROCEDURE aumentarSalario(cantidad NUMBER)
+);
+
+-- Profesor hereda de Persona y añade: asignatura y salario. Además incorpora un procedimiento propio.
