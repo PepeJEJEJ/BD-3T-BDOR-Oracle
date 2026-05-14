@@ -1,100 +1,115 @@
 # BD-3T-BDOR-Oracle
-Bases de Datos Objeto-Relacionales
-1. Introducción
-Las bases de datos objeto-relacionales (BDOR) son una evolución de las bases de datos relacionales tradicionales.
-Su objetivo es combinar:
+---
 
-el modelo relacional clásico (tablas, filas y columnas)
-con conceptos de programación orientada a objetos (POO).
-Oracle permite trabajar con:
+# Bases de Datos Objeto‑Relacionales (BDOR) en Oracle
 
-objetos,
-herencia,
-métodos,
-constructores,
-colecciones,
-polimorfismo,
-etc.
-Esto hace posible representar estructuras más complejas y cercanas al mundo real.
+## 📌 Introducción
+Las **bases de datos objeto‑relacionales (BDOR)** son una evolución del modelo relacional clásico. Combinan:
 
-¿Por qué surgieron las BDOR?
-En aplicaciones desarrolladas en Java, C# o C++, normalmente trabajamos con objetos:
+- Tablas, filas y columnas (modelo relacional)
+- Objetos, herencia, métodos y polimorfismo (POO)
 
-Cliente
-Pedido
-Producto
-Empleado
-Sin embargo, las bases de datos tradicionales almacenan:
+Oracle permite trabajar directamente con:
 
-tablas,
-filas,
-columnas.
-Las BDOR intentan reducir esa diferencia permitiendo almacenar y manipular objetos directamente dentro de Oracle.
+**objetos, tipos, herencia, métodos, constructores, colecciones**, etc., lo que facilita representar estructuras más cercanas al mundo real.
 
-Aunque hoy en día lo más habitual es usar:
+---
 
-bases de datos relacionales clásicas
-junto con ORM como Hibernate/JPA (lo veremos en 2º curso)
+## 🤔 ¿Por qué surgieron las BDOR?
+En lenguajes como **Java, C# o C++** trabajamos con objetos:
+
+- Cliente  
+- Pedido  
+- Producto  
+- Empleado  
+
+Pero las bases de datos tradicionales almacenan:
+
+- tablas  
+- filas  
+- columnas  
+
+Las BDOR reducen esta brecha permitiendo almacenar **objetos completos** dentro de Oracle.
+
+Aunque hoy en día se usa más:
+
+- **BD relacionales + ORM (Hibernate/JPA)**
+
 Oracle sigue soportando programación orientada a objetos dentro de la base de datos.
 
-Objetivos de esta práctica
-Con esta práctica aprenderemos:
+---
 
-qué es un tipo objeto,
-cómo crear objetos en Oracle,
-cómo usar herencia,
-cómo definir métodos,
-cómo crear tablas de objetos,
-cómo insertar y consultar objetos
-2. Conceptos básicos de BDOR
-Tipo objeto
-Es parecido a una clase en Java.
+## 🎯 Objetivos de esta práctica
+Aprenderás a:
 
-Contiene:
+- Crear **tipos objeto**
+- Usar **herencia**
+- Definir **métodos y procedimientos**
+- Crear **tablas de objetos**
+- Insertar y consultar **instancias de objetos**
+- Aplicar **polimorfismo** en Oracle
 
-atributos → datos
-métodos → comportamiento
+---
+
+## 🧩 1. Conceptos básicos
+
+### 🔷 Tipo Objeto
+Equivalente a una clase en Java.
+
+Incluye:
+
+- **Atributos** → datos  
+- **Métodos** → comportamiento  
+
 Ejemplo conceptual:
 
+```
 Persona
  ├── nombre
  ├── apellidos
  └── calcularEdad()
-Herencia
-Permite crear subtipos a partir de un tipo base.
+```
 
-Ejemplo:
+### 🔷 Herencia
+Permite crear subtipos:
 
+```
 Persona
  ├── Alumno
  └── Profesor
-Los subtipos heredan:
+```
 
-atributos
-métodos
-del tipo padre.
+Los subtipos heredan atributos y métodos.
 
-En Oracle esto se implementa con:
+En Oracle se implementa con:
 
+```
 UNDER
-Métodos MEMBER
-Son métodos asociados a una instancia concreta del objeto.
+```
 
-Ejemplo:
+### 🔷 Métodos MEMBER
+Son métodos asociados a una instancia:
 
+```
 profesor1.aumentarSalario()
-3. Ejemplo práctico completo
-En esta práctica se desarrollará un pequeño sistema de gestión académica utilizando:
+```
 
-tipos objeto,
-herencia,
-tablas objeto,
-métodos,
-funciones,
-polimorfismo.
-4. Eliminación previa de objetos
-Primero eliminamos tablas y tipos si ya existen:
+---
 
+## 🧪 2. Ejemplo práctico completo
+Se desarrollará un pequeño sistema académico usando:
+
+- Tipos objeto  
+- Herencia  
+- Métodos  
+- Tablas objeto  
+- Polimorfismo  
+
+---
+
+## 🧹 3. Eliminación previa de objetos
+
+```sql
 DROP TABLE Alumnos CASCADE CONSTRAINTS;
 DROP TABLE Profesores CASCADE CONSTRAINTS;
 
@@ -102,79 +117,106 @@ DROP TYPE Profesor FORCE;
 DROP TYPE Alumno FORCE;
 DROP TYPE Persona FORCE;
 DROP TYPE Direccion FORCE;
-5. Creación de un tipo objeto simple
-Tipo Dirección
-Creamos un objeto que represente una dirección.
+```
 
+---
+
+## 🏗️ 4. Creación de tipos objeto
+
+### 📍 Tipo `Direccion`
+
+```sql
 CREATE TYPE Direccion AS OBJECT (
     calle VARCHAR2(50),
     ciudad VARCHAR2(20),
     codigo_postal NUMBER(5)
 );
-Explicación
-Aquí estamos creando un tipo objeto llamado:
+```
 
-Direccion
-con:
+---
 
-calle
-ciudad
-código postal
-Este objeto podrá utilizarse dentro de otros objetos.
+### 📍 Tipo base `Persona`
 
-6. Creación del tipo base Persona
+```sql
 CREATE OR REPLACE TYPE Persona AS OBJECT (
     nombre VARCHAR2(50),
     apellidos VARCHAR2(100),
-    domicilio Direccion, --Aquí un atributo es otro objeto.
+    domicilio Direccion,
     fecha_nac DATE,
 
-     MEMBER FUNCTION nombreCompleto RETURN VARCHAR2 -- Es un método asociado a cada instancia del objeto.
-) NOT FINAL; -- Permite que otros tipos hereden de Persona.
+    MEMBER FUNCTION nombreCompleto RETURN VARCHAR2
+) NOT FINAL;
 /
-7. Implementación del método
-CREATE OR REPLACE TYPE BODY Persona AS
+```
 
+#### Implementación del método
+
+```sql
+CREATE OR REPLACE TYPE BODY Persona AS
     MEMBER FUNCTION nombreCompleto RETURN VARCHAR2 IS
     BEGIN
         RETURN nombre || ' ' || apellidos;
     END;
+END;
+/
+```
 
-END; -- El cuerpo del tipo contiene la implementación de los métodos.
-8. Creación del subtipo Alumno
-CREATE OR REPLACE TYPE Alumno UNDER Persona ( -- Under persona indica herencia
+---
+
+## 🎓 5. Subtipo `Alumno`
+
+```sql
+CREATE OR REPLACE TYPE Alumno UNDER Persona (
     matricula VARCHAR2(20),
     calificacion NUMBER
 );
 /
-9. Creación del subtipo Profesor
+```
+
+---
+
+## 👨‍🏫 6. Subtipo `Profesor`
+
+```sql
 CREATE OR REPLACE TYPE Profesor UNDER Persona (
     asignatura VARCHAR2(50),
     salario NUMBER,
     MEMBER PROCEDURE aumentarSalario(cantidad NUMBER)
 );
+/
+```
 
--- Profesor hereda de Persona y añade: asignatura y salario. Además incorpora un procedimiento propio.
-10. Implementación del procedimiento
+### Implementación del procedimiento
+
+```sql
 CREATE OR REPLACE TYPE BODY Profesor AS
-
     MEMBER PROCEDURE aumentarSalario(cantidad NUMBER) IS
     BEGIN
         SELF.salario := SELF.salario + cantidad;
     END;
-
 END;
--- El método modifica el atributo salario del objeto. SELF es el propio objeto sobre el que estás trabajando. 
--- La idea es igual que this en Java.
-11. Creación de tablas objeto
+/
+```
+
+---
+
+## 🗄️ 7. Creación de tablas objeto
+
+```sql
 CREATE TABLE Alumnos OF Alumno;
 CREATE TABLE Profesores OF Profesor;
+```
 
-/* Cada fila representa una instancia completa del tipo objeto definido en Oracle. */
-12. Inserción de objetos
-Insertar alumno
+Cada fila almacena **un objeto completo**.
+
+---
+
+## ✍️ 8. Inserción de objetos
+
+### Alumno
+
+```sql
 INSERT INTO Alumnos VALUES (
-
     Alumno(
         'Ramón',
         'Sánchez',
@@ -183,10 +225,13 @@ INSERT INTO Alumnos VALUES (
         'A001',
         9.5
     )
-
 );
 /
-Insertar profesor
+```
+
+### Profesor
+
+```sql
 INSERT INTO Profesores VALUES (
     Profesor(
         'Juan',
@@ -197,73 +242,79 @@ INSERT INTO Profesores VALUES (
         2000
     )
 );
--- Aquí usamos el constructor para crear objetos. Oracle almacena esos objetos directamente en la tabla.
-13. Consultas sobre objetos
+/
+```
+
+---
+
+## 🔍 9. Consultas sobre objetos
+
+```sql
 SELECT * FROM Alumnos;
 SELECT * FROM Profesores;
-14. Uso de VALUE
+```
+
+---
+
+## 📦 10. Uso de `VALUE`
+
+```sql
 DECLARE
-    a Alumno; --creo una variable objeto del tipo alumno
+    a Alumno;
 BEGIN
-    SELECT VALUE(al) --devuélveme el objeto completo
+    SELECT VALUE(al)
     INTO a
-    FROM Alumnos al -- la tabla objeto
+    FROM Alumnos al
     WHERE al.nombre = 'Ramón';
 
     DBMS_OUTPUT.PUT_LINE(
         'Nombre completo: ' || a.nombreCompleto()
     );
 END;
-15. Modificación de objetos
+/
+```
+
+---
+
+## 🔧 11. Modificación de objetos
+
+```sql
 DECLARE
-
     p Profesor;
-
 BEGIN
-
-    -- Obtener objeto desde la tabla
     SELECT VALUE(pr)
     INTO p
     FROM Profesores pr
     WHERE pr.nombre = 'Juan';
 
-    -- Mostrar salario original
-    DBMS_OUTPUT.PUT_LINE(
-        'Salario original: ' || p.salario
-    );
+    DBMS_OUTPUT.PUT_LINE('Salario original: ' || p.salario);
 
-    -- Modificar objeto en memoria
     p.aumentarSalario(300);
 
-    -- Mostrar salario modificado
-    DBMS_OUTPUT.PUT_LINE(
-        'Salario tras aumento: ' || p.salario
-    );
+    DBMS_OUTPUT.PUT_LINE('Salario tras aumento: ' || p.salario);
 
-    -- Guardar cambios en tabla
     UPDATE Profesores pr
     SET VALUE(pr) = p
     WHERE pr.nombre = 'Juan';
-
 END;
-16. Conclusiones
-Las bases de datos objeto-relacionales permiten incorporar conceptos de programación orientada a objetos dentro de Oracle.
+/
+```
 
-Con esta práctica hemos trabajado:
+---
 
-tipos objeto,
-herencia,
-métodos,
-constructores,
-tablas objeto,
-inserciones de objetos,
-consultas,
-Aunque actualmente las aplicaciones suelen utilizar:
+## 🏁 Conclusiones
+Las BDOR permiten integrar conceptos de POO dentro de Oracle:
 
-Java + Hibernate/JPA
-junto con bases relacionales tradicionales,
-las BDOR siguen siendo importantes para comprender:
+- Tipos objeto  
+- Herencia  
+- Métodos  
+- Tablas objeto  
+- Inserción y consulta de objetos  
 
-la evolución de las bases de datos,
-la integración entre POO y SQL,
-y el funcionamiento interno de Oracle.
+Aunque hoy se usa más **Java + Hibernate/JPA**, las BDOR son clave para entender:
+
+- La evolución de las bases de datos  
+- La integración entre POO y SQL  
+- El funcionamiento interno de Oracle  
+
+---
